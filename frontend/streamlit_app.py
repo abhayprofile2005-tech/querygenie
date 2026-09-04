@@ -4,7 +4,7 @@ import requests
 st.set_page_config(page_title="QueryGenie", page_icon="🧞")
 st.title("🧞 QueryGenie — Ask your database anything")
 
- API_URL = "https://querygenieapi.onrender.com""
+API_URL = "https://querygenieapi.onrender.com"
 
 question = st.text_input("Apna sawaal likho:", placeholder="e.g. total revenue by region")
 
