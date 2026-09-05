@@ -24,7 +24,10 @@ def query(req: QueryRequest):
     except UnsafeQueryError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    df = run_query(sql)
+    try:
+       df = run_query(sql)
+    except Exception as e:
+       raise HTTPException(status_code=500, detail=f"Query execution failed: {str(e)} | SQL was: {sql}")
     return {
         "question": req.question,
         "sql": sql,
