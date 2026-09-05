@@ -13,7 +13,7 @@ def validate_sql(sql: str) -> str:
         raise UnsafeQueryError(sql)
 
     upper = sql.upper()
-    if not upper.strip().startswith("SELECT"):
+    if not (upper.strip().startswith("SELECT") or upper.strip().startswith("WITH")):
         raise UnsafeQueryError("Only SELECT queries are allowed.")
 
     for word in BLOCKED_KEYWORDS:
