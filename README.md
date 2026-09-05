@@ -10,9 +10,9 @@ QueryGenie lets you query a database using plain English instead of writing SQL.
 
 **Example:**
 
-> "which customer has the highest order amount"
+> "top 5 artists by number of albums"
 
-This generates a SQL query with a JOIN and GROUP BY, and returns the answer instantly.
+This generates a query with a JOIN, GROUP BY, and LIMIT, and returns results like Iron Maiden, Led Zeppelin, Deep Purple instantly.
 
 ## Architecture
 
@@ -40,15 +40,24 @@ Result back to UI
 - **Backend:** FastAPI, SQLAlchemy
 - **LLM:** Groq API (`openai/gpt-oss-20b`)
 - **Frontend:** Streamlit
-- **Database:** SQLite (swappable with Postgres/MySQL)
+- **Database:** SQLite — using the [Chinook sample database](https://github.com/lerocha/chinook-database) (digital music store data: artists, albums, tracks, customers, invoices, employees)
 - **Testing:** Pytest
 - **Deployment:** Docker, Render (backend), Streamlit Community Cloud (frontend)
 
 ## Key Features
 
 - **Schema-aware prompting** — the LLM only sees the actual tables/columns, reducing hallucinated queries
-- **Safety validation layer** — blocks `DROP`, `DELETE`, `UPDATE`, and multi-statement queries before execution; only `SELECT` is allowed
+- **SQLite-specific prompting** — enforces `LIMIT` instead of dialect-specific syntax like `TOP`
+- **Safety validation layer** — allows only `SELECT` and `WITH` (CTE) queries; blocks `DROP`, `DELETE`, `UPDATE`, and multi-statement queries before execution
 - **Tested** — validator logic covered by automated pytest tests
+
+## Example Queries to Try
+
+- "top 5 artists by number of albums"
+- "total sales by country"
+- "which customer has spent the most money"
+- "which genre generates the most revenue"
+- "which employee has the most customers"
 
 ## Running Locally
 
@@ -58,10 +67,16 @@ cd querygenie
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-python scripts/seed_db.py
 ```
 
-Add your `GROQ_API_KEY` to a `.env` file, then start the backend:
+Create a `.env` file with:
+
+```
+GROQ_API_KEY=your_groq_api_key
+DATABASE_URL=sqlite:///./data/chinook.sqlite
+```
+
+Then start the backend:
 
 ```bash
 uvicorn app.main:app --reload --port 8000
